@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сброс прогресса - InvestEdu</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 600px;
+            margin: 100px auto;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { margin-top: 0; }
+        .btn {
+            background: #4fc3f7;
+            color: #333;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #29b6f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .btn-danger {
+            background: #ef5350;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #e53935;
+        }
+        .btn-success {
+            background: #66bb6a;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #43a047;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .status.success {
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid #4caf50;
+        }
+        .progress-info {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .progress-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .progress-item:last-child { border-bottom: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Сброс прогресса</h1>
+        <p>Эта страница позволит вам сбросить весь прогресс обучения в InvestEdu.</p>
+        
+        <div class="progress-info" id="progressInfo">
+            <h3>📊 Текущий прогресс:</h3>
+            <div class="progress-item">
+                <span>Пройдено уроков:</span>
+                <span id="lessonsCount">-</span>
+            </div>
+            <div class="progress-item">
+                <span>Решено кейсов:</span>
+                <span id="casesCount">-</span>
+            </div>
+            <div class="progress-item">
+                <span>Всего баллов:</span>
+                <span id="totalPoints">-</span>
+            </div>
+        </div>
+        
+        <div class="status" id="status"></div>
+        
+        <div>
+            <button class="btn btn-danger" onclick="resetProgress()">🗑️ Сбросить весь прогресс</button>
+            <button class="btn btn-success" onclick="goHome()">🏠 Вернуться на главную</button>
+        </div>
+    </div>
+
+    <script>
+        // Показываем текущий прогресс
+        function showProgress() {
+            const lessons = JSON.parse(localStorage.getItem('lessons_completed') || '[]')
+            const cases = JSON.parse(localStorage.getItem('cases_completed') || '[]')
+            const points = localStorage.getItem('totalPoints') || '0'
+            
+            document.getElementById('lessonsCount').textContent = lessons.length
+            document.getElementById('casesCount').textContent = cases.length
+            document.getElementById('totalPoints').textContent = points
+        }
+        
+        // Сброс прогресса
+        function resetProgress() {
+            if (confirm('Вы уверены что хотите сбросить весь прогресс? Это действие нельзя отменить!')) {
+                localStorage.removeItem('lessons_completed')
+                localStorage.removeItem('cases_completed')
+                localStorage.removeItem('totalPoints')
+                localStorage.removeItem('user_settings')
+                
+                const status = document.getElementById('status')
+                status.textContent = '✅ Прогресс успешно сброшен! Все данные удалены.'
+                status.className = 'status success'
+                status.style.display = 'block'
+                
+                showProgress()
+                
+                setTimeout(() => {
+                    window.location.href = 'http://localhost:5173'
+                }, 2000)
+            }
+        }
+        
+        // Возврат на главную
+        function goHome() {
+            window.location.href = 'http://localhost:5173'
+        }
+        
+        // Показываем прогресс при загрузке
+        showProgress()
+    </script>
+</body>
+</html>
