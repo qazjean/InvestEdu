@@ -1,0 +1,37 @@
+{
+  "features": [
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "MA20",
+    "MA50",
+    "MA200",
+    "close_MA20_ratio",
+    "close_MA50_ratio",
+    "close_MA200_ratio",
+    "daily_return",
+    "volatility_30",
+    "momentum_10_ratio",
+    "RSI",
+    "MACD",
+    "MACD_signal",
+    "MACD_hist",
+    "volume_MA20",
+    "volume_ratio",
+    "HL_range_pct",
+    "CO_ratio",
+    "position_in_range",
+    "key_rate",
+    "usd_rub",
+    "oil_price",
+    "inflation"
+  ],
+  "macro_features": [
+    "key_rate",
+    "usd_rub",
+    "oil_price",
+    "inflation"
+  ]
+}
