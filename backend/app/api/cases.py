@@ -107,18 +107,49 @@ async def submit_case_decision(case_id: int, decision: dict, db: Session = Depen
     user_decision = decision.get("decision")
     is_correct = user_decision == case.correct_decision
 
+    # Маппинг решений для отображения
+    decision_labels = {
+        "buy": "Купить",
+        "sell": "Продать",
+        "hold": "Держать"
+    }
+
     explanation_text = ""
     if isinstance(case.explanation, dict):
-        if case.explanation.get('detailed_explanation'):
-            explanation_text = case.explanation['detailed_explanation']
+        if is_correct:
+            # Правильный ответ — показываем объяснение почему это верно
+            if case.explanation.get('detailed_explanation'):
+                explanation_text = case.explanation['detailed_explanation']
+            else:
+                explanation_text = case.explanation.get('summary', '')
+                if case.explanation.get('key_points'):
+                    explanation_text += "\n\n**Почему это правильное решение:**\n"
+                    for i, point in enumerate(case.explanation['key_points'], 1):
+                        explanation_text += f"{i}. {point}\n"
+                if case.explanation.get('outcome'):
+                    explanation_text += f"\n**Что произошло потом:** {case.explanation['outcome']}"
+                if case.explanation.get('lesson'):
+                    explanation_text += f"\n\n**Урок:** {case.explanation['lesson']}"
         else:
-            explanation_text = case.explanation.get('summary', '')
+            # Неправильный ответ — показываем почему это неверно и какое решение было правильным
+            user_decision_label = decision_labels.get(user_decision, user_decision)
+            correct_decision_label = decision_labels.get(case.correct_decision, case.correct_decision)
+            
+            explanation_text = f"**Ваш выбор: {user_decision_label}** — это неверное решение.\n\n"
+            explanation_text += f"**Правильное решение: {correct_decision_label}**\n\n"
+            
+            # Объясняем почему выбор пользователя неправильный
+            explanation_text += f"**Почему {user_decision_label} — неправильно:**\n"
+            explanation_text += "Это решение привело бы к убыткам. В данной ситуации следовало выбрать другое действие.\n\n"
+            
+            explanation_text += f"**Почему {correct_decision_label} — правильно:**\n"
             if case.explanation.get('key_points'):
-                explanation_text += "\n\n**Почему:**\n"
                 for i, point in enumerate(case.explanation['key_points'], 1):
                     explanation_text += f"{i}. {point}\n"
+            
             if case.explanation.get('outcome'):
-                explanation_text += f"\n**Итог:** {case.explanation['outcome']}"
+                explanation_text += f"\n**Что произошло потом:** {case.explanation['outcome']}"
+            
             if case.explanation.get('lesson'):
                 explanation_text += f"\n\n**Урок:** {case.explanation['lesson']}"
     else:
